@@ -9,6 +9,9 @@ from dotenv import load_dotenv
 import pydantic_ai
 from utility import extract_body
 from typing import Literal
+import json
+import os
+
 
 load_dotenv()
 
@@ -127,17 +130,20 @@ class TriageResult(BaseModel):
 
 
 
-def agent_summary(prompt: str) -> str:
-    if not prompt:
-        return "no prompt provided"
+def agent_summary(inboxes: list[dict]) -> TriageResult:
+    if not inboxes:
+        return TriageResult(results=[])
 
-    print("summerizing....")
     agent = Agent(
         model="groq:openai/gpt-oss-20b",
-        system_prompt="summerize the user, with their's inboxes messages of the day, like updating user on the first of the morning.",
+        output_type=TriageResult
+        system_prompt=SYSTEM_PROMPT,
     )
-    print("preparing answer...")
-    response = agent.run_sync(prompt)
+    
+    print("thinking .\./")
+    response = agent.run_sync(
+        "Classify these emails:\n" + json.dumps(inboxes, ensure_ascii=False)
+    )
 
     return response.output
 

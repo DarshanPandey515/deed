@@ -8,6 +8,7 @@ from pydantic import BaseModel
 from dotenv import load_dotenv
 import pydantic_ai
 from utility import extract_body
+from typing import Literal
 
 load_dotenv()
 
@@ -80,12 +81,6 @@ def list_inbox(max_results=10, body_chars=800):
     return inboxes
 
 
-class InboxModel(BaseModel):
-    date: str
-    email_by: str
-    subject: str
-
-
 SYSTEM_PROMPT = """You triage email for a user's inbox.
 
 For each email decide if it is ACTIONABLE: the user must reply, decide, approve, attend, pay, or act before a deadline. Otherwise it is not actionable.
@@ -105,6 +100,28 @@ Rules:
 
 Return a TriageResult: one entry per input email, same order, same id."""
 
+
+Intent = Literal[
+    "request", "question", "approval", "deadline", "meeting",
+    "payment", "security", "follow_up",
+    "fyi", "newsletter", "marketing", "notification", "social", "receipt", "spam",
+]
+
+
+class EmailClassification(BaseModel):
+    id: str
+    is_actionable: bool
+    intent: Intent
+    priority: Literal["high", "medium", "low"]
+    confidence: Literal["high", "medium", "low"]
+    requires_reply: bool
+    deadline: str | None = None          
+    reason: str                          
+    suggested_action: str | None = None  
+
+
+class TriageResult(BaseModel):
+    results: list[EmailClassification]
 
 
 

@@ -4,7 +4,7 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build
 from pydantic_ai import Agent
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
 from dotenv import load_dotenv
 import pydantic_ai
 from utility import extract_body
@@ -104,23 +104,24 @@ Rules:
 Return a TriageResult: one entry per input email, same order, same id."""
 
 
-Intent = Literal[
-    "request", "question", "approval", "deadline", "meeting",
-    "payment", "security", "follow_up",
-    "fyi", "newsletter", "marketing", "notification", "social", "receipt", "spam",
-]
+
 
 
 class EmailClassification(BaseModel):
     id: str
     is_actionable: bool
-    intent: Intent
-    priority: Literal["high", "medium", "low"]
-    confidence: Literal["high", "medium", "low"]
+    intent: str
+    priority: str
+    confidence: str
     requires_reply: bool
     deadline: str | None = None          
     reason: str                          
     suggested_action: str | None = None  
+    
+    @field_validator("intent", "priority", "confidence", mode="before")
+    @classmethod
+    def normalize(cls, v):
+        return v.strip().lower() if isinstance(v, str) else v
 
 
 class TriageResult(BaseModel):
@@ -135,21 +136,22 @@ def agent_summary(inboxes: list[dict]) -> TriageResult:
         return TriageResult(results=[])
 
     agent = Agent(
-        model="groq:openai/gpt-oss-20b",
-        output_type=TriageResult
+        model="qwen/qwen3.8-27b",
+        output_type=TriageResult,
         system_prompt=SYSTEM_PROMPT,
+        model_settings={"temperature": 0},
     )
     
-    print("thinking .\./")
+    print("thinking ...")
     response = agent.run_sync(
-        "Classify these emails:\n" + json.dumps(inboxes, ensure_ascii=False)
+        "Classify these emails:\n" + json.dumps(inboxes, ensure_ascii=False),
     )
 
     return response.output
 
 
 def main():
-    context = list_inbox(max_results=10)
+    context = list_inbox(max_results=3)
     result = agent_summary(context)
 
     actionable = [r for r in result.results if r.is_actionable]

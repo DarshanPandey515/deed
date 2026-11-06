@@ -136,7 +136,7 @@ def agent_summary(inboxes: list[dict]) -> TriageResult:
         return TriageResult(results=[])
 
     agent = Agent(
-        model="qwen/qwen3.8-27b",
+        model="groq:qwen/qwen3.8-27b",
         output_type=TriageResult,
         system_prompt=SYSTEM_PROMPT,
         model_settings={"temperature": 0},

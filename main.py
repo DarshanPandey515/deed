@@ -7,6 +7,7 @@ from pydantic_ai import Agent
 from pydantic import BaseModel
 from dotenv import load_dotenv
 import pydantic_ai
+from utility import extract_body
 
 load_dotenv()
 
@@ -34,7 +35,7 @@ def get_service():
     return build("gmail", "v1", credentials=creds)
 
 
-def list_inbox(max_results=10):
+def list_inbox(max_results=10, body_chars=800):
     service = get_service()
 
     response = (
@@ -50,8 +51,8 @@ def list_inbox(max_results=10):
 
     messages = response.get("messages", [])
     inboxes = []
-    count = 1
-    for m in messages:
+
+    for count, m in enumerate(messages, start=1):
         print(f"fetching inbxoes: {count} ")
         msg = (
             service.users()
@@ -59,23 +60,23 @@ def list_inbox(max_results=10):
             .get(
                 userId="me",
                 id=m["id"],
-                format="metadata",
+                format="full",
                 metadataHeaders=["From", "Subject", "Date"],
             )
             .execute()
         )
 
         headers = {h["name"]: h["value"] for h in msg["payload"]["headers"]}
-
-        mails = {
-            "Date": headers.get("Date"),
-            "From": headers.get("From"),
-            "Subject": headers.get("Subject"),
-        }
-
-        inboxes.append(mails)
-        count += 1
-
+        body = extract_body(msg["payload"]) or msg.get("snippet", "")
+        
+        inboxes.append({
+            "id":msg["id"],
+            "Date":headers.get("Date"),
+            "From":headers.get("From"),
+            "Subject":headers.get("Subject"),
+            "Body":body[:body_chars].strip(),
+        })
+        
     return inboxes
 
 

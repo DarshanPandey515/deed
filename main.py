@@ -149,18 +149,20 @@ def agent_summary(inboxes: list[dict]) -> TriageResult:
 
 
 def main():
-    context = list_inbox()
-    prompt = f"""
-    user mail inboxes list: 
-    {context}
-    """
-    
-    summary = agent_summary(prompt)
+    context = list_inbox(max_results=10)
+    result = agent_summary(context)
 
-    return summary
+    actionable = [r for r in result.results if r.is_actionable]
+    
+    print("=" * 20)
+    print(f"total={len(result.results)} actionable={len(actionable)}")
+    
+    for r in actionable:
+        print(f"[{r.priority}] {r.intent} — {r.suggested_action}  ({r.reason})")
+
+    return result
 
 
 if __name__ == "__main__":
-    answer = main()
-    print("="*20)
-    print(answer)
+    main()
+

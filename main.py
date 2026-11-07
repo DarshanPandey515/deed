@@ -100,6 +100,19 @@ def create_draft(service, to, subject, body, thread_id):
     print("draft created with id: ", draft["id"])
     return draft
 
+def send_drafts(service, draft_id):
+    sent_message = service.users().drafts().send(
+        userId="me",
+        body={
+            "id":draft_id
+        }
+    ).execute()
+    print(f"email sent, message id: ", sent_message["id"])
+    return sent_message
+
+
+    
+
 
 
 

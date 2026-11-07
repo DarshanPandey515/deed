@@ -11,7 +11,8 @@ from utility import extract_body
 from typing import Literal
 import json
 import os
-
+from email.mime.text import MIMEText
+import base64
 
 load_dotenv()
 
@@ -82,6 +83,24 @@ def list_inbox(max_results=10, body_chars=800):
         })
         
     return inboxes
+
+
+def create_draft(service, to, subject, body, thread_id):
+    message = MIMEText(body)
+    message["to"] = to
+    message["subject"] = subject
+
+    raw = base64.urlsafe_b64decode(message.as_bytes()).decode()
+    
+    draft_body = {"message":{"raw":raw}}
+    if thread_id:
+        draft_body["message"]["threadId"] = thread_id
+    
+    draft = service.users().drafts().create(userId="me", body=draft_body).execute()
+    print("draft created with id: ", draft["id"])
+    return draft
+
+
 
 
 SYSTEM_PROMPT = """You triage email for a user's inbox.

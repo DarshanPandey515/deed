@@ -18,7 +18,7 @@ load_dotenv()
 pydantic_ai.BANNER_ENABLED = False
 
 
-SCOPES = ["https://www.googleapis.com/auth/gmail.readonly"]
+SCOPES = ["https://www.googleapis.com/auth/gmail.compose"]
 
 
 def get_service():

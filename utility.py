@@ -15,7 +15,7 @@ def extract_body(payload: dict) -> str:
                 return text
         return ""
     
-    if payload.get("mimeType") == "text/plain" and payload.get("body", {}).get("data")):
+    if payload.get("mimeType") == "text/plain" and payload.get("body", {}).get("data"):
         return decode(payload["body"]["data"])
     
     return ""

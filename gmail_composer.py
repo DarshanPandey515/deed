@@ -2,7 +2,7 @@ from email.mime.text import MIMEText
 import base64
 
 
-def create_draft(service, to, subject, body, thread_id):
+def create_draft(service, to, subject, body, thread_id=None):
     message = MIMEText(body)
     message["to"] = to
     message["subject"] = subject

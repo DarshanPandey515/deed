@@ -19,3 +19,5 @@ Rules:
 Return a TriageResult: one entry per input email, same order, same id."""
 
 MODEL = "groq:qwen/qwen3.8-27b"
+TOKEN_FILE = "token.json"
+CREDENTIALS_FILE = "credentials.json"

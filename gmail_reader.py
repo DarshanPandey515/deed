@@ -38,7 +38,7 @@ def list_inbox(max_results=10, body_chars=800):
         
         inboxes.append({
             "id":msg["id"],
-            "threadId":msg.get("threadId")
+            "threadId":msg.get("threadId"),
             "Date":headers.get("Date"),
             "From":headers.get("From"),
             "Subject":headers.get("Subject"),

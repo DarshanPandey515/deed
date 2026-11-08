@@ -44,7 +44,7 @@ def main():
             to=recipient,
             subject=subject,
             body=draft_body,
-            thread_id=original_email["id"] if original_email else None,
+            thread_id=original_email.get("threadId") if original_email else None,
         )
 
         print("\n--- DRAFT FOR YOUR REVIEW ---")

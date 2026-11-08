@@ -20,7 +20,7 @@ def list_inbox(max_results=10, body_chars=800):
     inboxes = []
 
     for count, m in enumerate(messages, start=1):
-        print(f"fetching inbxoes: {count} ")
+        print(f"fetching inboxes: {count} ")
         msg = (
             service.users()
             .messages()

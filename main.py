@@ -34,7 +34,7 @@ def main():
             (e for e in context if e["id"] == r.id), None
         )
         
-        print(f"original email: {original_email}")
+        print(f"replying to: {original_email['From']} — {original_email['Subject']}")           
         
         recipient = original_email["From"] if original_email else "unknown@example.com"
         subject = f"Re: {original_email['Subject']}" if original_email else "Re: your email"

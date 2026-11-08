@@ -2,7 +2,7 @@ import dotenv
 import pydantic_ai
 from auth import get_service
 from gmail_reader import list_inbox
-from gmail_composer import create_draft, send_drafts
+from gmail_composer import create_draft, send_draft
 from triage import agent_summary
 
 dotenv.load_dotenv()

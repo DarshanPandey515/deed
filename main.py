@@ -56,7 +56,7 @@ def main():
         approval = input("Send this draft? (y/n): ").strip().lower()
 
         if approval == "y":
-            send_drafts(service, draft["id"])
+            send_draft(service, draft["id"])
             print("Draft approved and sent.")
         else:
             print("send cancelled. The draft remains in your Gmail drafts folder for later use.")

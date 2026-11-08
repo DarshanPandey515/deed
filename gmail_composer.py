@@ -17,7 +17,7 @@ def create_draft(service, to, subject, body, thread_id):
     print("draft created with id: ", draft["id"])
     return draft
 
-def send_drafts(service, draft_id):
+def send_draft(service, draft_id):
     sent_message = service.users().drafts().send(
         userId="me",
         body={

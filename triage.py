@@ -32,7 +32,7 @@ class EmailDraft(BaseModel):
         description=(
             "Professional reply body only. Do not include greeting,",
             "'Regarding:', closing, or signature"
-        )
+        ),
         min_length=30,
     )
     

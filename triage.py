@@ -24,30 +24,25 @@ class EmailClassification(BaseModel):
 class EmailDraft(BaseModel):
     subject: str = Field(
         description="Concise reply subject line",
-        min_length="3",
+        min_length=3,
         max_length=120,
     )
-    
+
     body: str = Field(
         description=(
-            "Professional reply body only. Do not include greeting,",
+            "Professional reply body only. Do not include greeting, "
             "'Regarding:', closing, or signature"
         ),
         min_length=30,
     )
-    
+
     @field_validator("body")
     @classmethod
     def reject_placeholder(cls, value: str) -> str:
         value = value.strip()
-        lowered = value.lower()
-        if "placeholder" in lowered:
+        if "placeholder" in value.lower():
             raise ValueError("Body must contain a real draft, not placeholder text")
-        if len(value) > 30:
-            raise ValueError("Body is too short")
-
         return value
-
 
 class TriageResult(BaseModel):
     results: list[EmailClassification]
@@ -69,4 +64,26 @@ def agent_summary(inboxes: list[dict]) -> TriageResult:
         "Classify these emails:\n" + json.dumps(inboxes, ensure_ascii=False),
     )
 
+    return response.output
+
+
+def email_draft_agent(prompt: str) -> EmailDraft:
+    
+    if not prompt:
+        raise ValueError("Prompt not provided.")
+    
+    draft_agent = Agent(
+        model="groq:openai/gpt-oss-20b",
+        output_type=EmailDraft,
+        instructions=(
+            "You are an assistant that drafts concise, professional email replies.\n"
+            "Use the provided original email context and requested action.\n"
+            "Return only the structured EmailDraft.\n"
+            "The body must be ready to insert after the greeting and before the closing.\n"
+            "Do not include 'Hi,', 'Regarding:', 'Best,', or a signature in body."
+        ),
+    )
+
+    print("drafting...")
+    response = draft_agent.run_sync(prompt)
     return response.output

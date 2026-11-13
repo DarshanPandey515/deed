@@ -70,13 +70,6 @@ def main():
         recipient = original_email["From"] if original_email else "unknown@example.com"
         subject = response.subject or f"Re: {original_email.get('Subject', '')}"
 
-        draft = create_draft(
-            service=service,
-            to=recipient,
-            subject=subject,
-            body=draft_response,
-            thread_id=original_email.get("threadId") if original_email else None,
-        )
 
         print("\n--- DRAFT FOR YOUR REVIEW ---")
         print(f"To: {recipient}")
@@ -87,10 +80,17 @@ def main():
         approval = input("Send this draft? (y/n): ").strip().lower()
 
         if approval == "y":
+            draft = create_draft(
+                service=service,
+                to=recipient,
+                subject=subject,
+                body=draft_response,
+                thread_id=original_email.get("threadId") if original_email else None,
+            )
             send_draft(service, draft["id"])
             print("Draft approved and sent.")
         else:
-            print("send cancelled. The draft remains in your Gmail drafts folder for later use.")
+            print("send cancelled.")
 
     return result
 

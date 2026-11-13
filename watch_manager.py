@@ -10,7 +10,7 @@ def register_watch(topic_name=TOPIC_NAME):
     service = get_service()
     request = {
         "topicName": topic_name,
-        "labelsIds": ["INBOX"],
+        "labelIds": ["INBOX"],
     }
     
     response = service.users().watch(userId="me", body=request).execute()

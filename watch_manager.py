@@ -1,6 +1,8 @@
 import os
 from auth import get_service
 from dotenv import load_dotenv
+from datetime import datetime, timezone
+from logger import logger
 
 load_dotenv()
 
@@ -14,5 +16,8 @@ def register_watch(topic_name=TOPIC_NAME):
     }
     
     response = service.users().watch(userId="me", body=request).execute()
-    print(f"watch registered, expiration: {response["expiration"]}")
+    exp_ms = int(response["expiration"])
+    exp_dt = datetime.fromtimestamp(exp_ms / 1000, tz=timezone.utc)
+
+    logger.info(f"watch registered, expires at {exp_dt.isoformat()}")
     return response

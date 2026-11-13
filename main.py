@@ -10,7 +10,7 @@ pydantic_ai.BANNER_ENABLED = False
 
 
 def main():
-    context = list_inbox(max_results=3)
+    context = list_inbox(max_results=10)
     result = agent_summary(context)
 
     actionable = [r for r in result.results if r.is_actionable]
@@ -61,7 +61,7 @@ def main():
         response = email_draft_agent(prompt)
         draft_response = (
             f"Hi,\n\n"
-            f"Regarding: {r.intent}\n\n"
+            # f"Regarding: {r.intent}\n\n"
             f"{response.body}\n\n"
             f"Best,\nDarshan Pandey"
         )        
